@@ -39,9 +39,9 @@ const bm2 = new BinMap( [ [ 'key1', 'value1' ], ... ], { cmp } );
 `between( { ... } )` returns an IterableIterator between two boundary keys. The options object can contain:
  - **Either** an `lt` (less than) **or** an `le` (less than or equal to).
  - **Either** a `gt` (greater than) **or** a `ge` (greater than or equal to).
- - `reverse` being a boolean (defaults to false), which returns an iterator from the end to the beginning of the span.
+ - `reverse` being a boolean (defaults to `false`), which if `true` returns an iterator from the end to the beginning of the span.
 
-There are two magic values for `lt`, `le`, `gt` and `ge` which is `BinMap.min` and `BinMap.max` which represents the lowest/highest possible values. These are also the default, so an empty `between( { } )` (or just `between( )`) iteraters the whole map.
+There are two magic values for `lt`, `le`, `gt` and `ge` which is `BinMap.min` and `BinMap.max` which represents the lowest/highest possible values. These are also the default, so an empty `between( { } )` (or just `between( )`) iterates the whole map.
 
 ```ts
 import BinMap from 'binmap'
