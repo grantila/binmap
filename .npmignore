@@ -1,0 +1,9 @@
+.nyc_output/
+coverage/
+build-test
+lib
+test
+scripts
+.npmignore
+.travis.yml
+tsconfig*.json

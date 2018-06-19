@@ -1,0 +1,49 @@
+{
+  "name": "binmap",
+  "description": "Ordered Map (ES Map compatible)",
+  "license": "MIT",
+  "version": "0.0.0",
+  "author": "Gustaf Räntilä <g.rantila@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/grantila/binmap"
+  },
+  "types": "./dist/index.d.ts",
+  "main": "./dist/index.js",
+  "scripts": {
+    "build": "scripts/build.sh",
+    "mocha": "node_modules/.bin/mocha --bail --check-leaks build-test",
+    "test": "node_modules/.bin/nyc npm run mocha",
+    "buildtest": "npm run build && npm run test",
+    "coverage": "node_modules/.bin/nyc report --reporter=html"
+  },
+  "pre-commit": [
+    "build",
+    "test"
+  ],
+  "keywords": [
+    "map",
+    "ordered",
+    "sorted",
+    "binary",
+    "tree",
+    "red-black"
+  ],
+  "devDependencies": {
+    "@types/bintrees": "1.x",
+    "@types/chai": "4.x",
+    "@types/mocha": "5.x",
+    "@types/sinon": "5.x",
+    "chai": "4.x",
+    "coveralls": "3.x",
+    "mocha": "5.x",
+    "nyc": "12.x",
+    "pre-commit": "1.x",
+    "sinon": "6.x",
+    "source-map-support": "0.x",
+    "typescript": "2.9.x"
+  },
+  "dependencies": {
+    "bintrees": "1.x"
+  }
+}
