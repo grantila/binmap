@@ -786,3 +786,117 @@ describe( 'basics', ( ) =>
 		expect( thrower ).to.throw( "both" );
 	} );
 } );
+
+describe( 'types', ( ) =>
+{
+	it( 'date', ( ) =>
+	{
+		const spy = sinon.spy( );
+		const bm = new BinMap< Date, number >( );
+
+		const dates: Array< [ number, Date ] > = [
+			[ 1, new Date( "2018-01-01T00:01:00Z" ) ],
+			[ 2, new Date( "2018-01-02T00:01:00Z" ) ],
+			[ 3, new Date( "2018-01-03T00:01:00Z" ) ],
+			[ 4, new Date( "2018-01-04T00:01:00Z" ) ],
+		];
+		const datesKeyVal = dates.map( arr => [ ...arr ].reverse( ) );
+
+		bm.set( dates[ 2 ][ 1 ], dates[ 2 ][ 0 ] );
+		bm.set( dates[ 1 ][ 1 ], dates[ 1 ][ 0 ] );
+		bm.set( dates[ 0 ][ 1 ], dates[ 0 ][ 0 ] );
+		bm.set( dates[ 3 ][ 1 ], dates[ 3 ][ 0 ] );
+
+		expect( bm.size ).to.equal( 4 );
+
+		bm.forEach( spy );
+		expect( spy.callCount ).to.equal( 4 );
+		expect( spy.args ).to.deep.equal( [
+			[ ...dates[ 0 ], bm ],
+			[ ...dates[ 1 ], bm ],
+			[ ...dates[ 2 ], bm ],
+			[ ...dates[ 3 ], bm ],
+		] );
+
+		const future = new Date( );
+		expect( Array.from( bm.between( { le: future } ) ) )
+			.to.deep.equal( datesKeyVal );
+		expect( Array.from( bm.between( { le: future, reverse: true } ) ) )
+			.to.deep.equal( [ ...datesKeyVal ].reverse( ) );
+
+		const past = new Date( "2017-10-01T00:01:00Z" );
+		expect( Array.from( bm.between( { ge: past } ) ) )
+			.to.deep.equal( datesKeyVal );
+		expect( Array.from( bm.between( { ge: past, reverse: true } ) ) )
+			.to.deep.equal( [ ...datesKeyVal ].reverse( ) );
+	} );
+
+	it( 'undefined', ( ) =>
+	{
+		const spy = sinon.spy( );
+		const bm = new BinMap< Date, number >( );
+
+		bm.set( new Date( "2018-01-01T00:01:00Z" ), 0 );
+
+		const throwerUndefined = ( ) =>
+			bm.set( undefined, 2 );
+
+		const throwerNull = ( ) =>
+			bm.set( null, 2 );
+
+		expect( throwerUndefined ).to.throw( /Cannot set.*as key/ );
+		expect( throwerNull ).to.throw( /Cannot set.*as key/ );
+	} );
+
+	it( 'multi types', ( ) =>
+	{
+		const spy = sinon.spy( );
+		const bm = new BinMap< Date, number >( );
+
+		bm.set( new Date( "2018-01-01T00:01:00Z" ), 0 );
+
+		// Invalid type
+		const thrower = ( ) =>
+			bm.set( < any >"foo", 1 );
+
+		expect( thrower ).to.throw( "mis-matching" );
+	} );
+
+	it( 'invalid type', ( ) =>
+	{
+		const spy = sinon.spy( );
+		const bm = new BinMap< { foo: number; }, number >( );
+
+		// Invalid type
+		const thrower = ( ) =>
+			bm.set( { foo: 0 }, 0 );
+
+		expect( thrower ).to.throw( "Cannot set key of type object" );
+	} );
+
+	it( 'custom type', ( ) =>
+	{
+		type Foo = { foo: number; };
+		const spy = sinon.spy( );
+		const cmp = ( a: Foo, b: Foo ) => a.foo - b.foo;
+		const bm = new BinMap< Foo, number >( { cmp } );
+
+		bm.set( { foo: 0 }, 0 );
+		bm.set( { foo: 2 }, 2 );
+		bm.set( { foo: 1 }, 1 );
+
+		expect( Array.from( bm.between( ) ) )
+		.to.deep.equal( [
+			[ { foo: 0 }, 0 ],
+			[ { foo: 1 }, 1 ],
+			[ { foo: 2 }, 2 ],
+		] );
+
+		expect( Array.from( bm.between( { reverse: true } ) ) )
+		.to.deep.equal( [
+			[ { foo: 2 }, 2 ],
+			[ { foo: 1 }, 1 ],
+			[ { foo: 0 }, 0 ],
+		] );
+	} );
+} );

@@ -7,10 +7,33 @@ export interface Options< K, V >
 	cmp: ( a: K, b: K ) => number;
 }
 
-const defaultComparators = {
-	string: ( a: string, b: string ) => a.localeCompare( b ),
+interface Comparator
+{
+	cmp: ( a: any, b: any ) => number;
+	sameType: ( val: any ) => boolean;
+}
+
+function valueOf( v: any )
+{
+	return ( v && ( typeof v[ 'valueOf' ] === 'function' ) )
+		? v.valueOf( )
+		: v;
+}
+
+const defaultComparators: { [ key: string ]: Comparator; } = {
+	string: {
+		cmp: ( a: string, b: string ) =>
+			valueOf( a ).localeCompare( valueOf( b ) ),
+		sameType: ( a: string ) =>
+			typeof valueOf( a ) === 'string',
+	},
+	number: {
+		cmp: ( a: number, b: number ) =>
+			valueOf( a ) - valueOf( b ),
+		sameType: ( val: number ) =>
+			typeof valueOf( val ) === 'number',
+	},
 };
-const fallbackComparator = ( a: any, b: any ) => a - b;
 
 export type IteratorType< K, V > =
 	[ K, V ];
@@ -43,7 +66,7 @@ const iteratorEnd: Readonly< IteratorEnd > =
 	Object.freeze( { done: true, value: void 0 } ) as IteratorEnd;
 const emptyIterator: IterableIterator< any > =
 	makeIterator( ( ) => iteratorEnd );
-
+	
 export type LE< K > = { le: K | typeof BinMap.min; lt?: never; };
 export type LT< K > = { lt: K | typeof BinMap.min; le?: never; };
 export type GE< K > = { ge: K | typeof BinMap.max; gt?: never; };
@@ -64,6 +87,7 @@ export default class BinMap< K, V > extends Map
 	};
 
 	private _data: UnderlyingStorage< K, V >;
+	private _comparator: Comparator;
 
 	constructor(
 		values?: ConstructorValues< K, V >,
@@ -102,16 +126,35 @@ export default class BinMap< K, V > extends Map
 	private ensureComparator( val: any ): void
 	{
 		if ( this._data )
-			return;
+		{
+			if ( !this._comparator.sameType( val ) )
+				throw new Error( "Cannot set key of mis-matching type" );
 
-		this._opts.cmp =
-			this._opts.cmp
-			|| defaultComparators[ typeof val ]
-			|| fallbackComparator;
+			return;
+		}
+
+		if ( this._opts.cmp )
+			this._comparator = {
+				cmp: this._opts.cmp,
+				sameType: ( ) => true,
+			};
+		else
+		{
+			const valType = typeof valueOf( val );
+
+			const comparator = defaultComparators[ valType ];
+			if ( !comparator )
+				throw new Error(
+					`Cannot set key of type ${valType} which are not (or ` +
+					"convertible into) strings or numbers."
+				);
+
+			this._comparator = comparator;
+		}
 
 		const comparator =
 			( a: IteratorType< K, V >, b: IteratorType< K, V > ) =>
-				this._opts.cmp( a[ 0 ], b[ 0 ] );
+				this._comparator.cmp( a[ 0 ], b[ 0 ] );
 
 		this._data = new RBTree( comparator );
 	}
@@ -161,8 +204,6 @@ export default class BinMap< K, V > extends Map
 
 		const _opts = Object.assign( { }, opts );
 
-		const x = Object.getOwnPropertyNames( opts );
-
 		const hasLt = opts.hasOwnProperty( 'lt' );
 		const hasLe = opts.hasOwnProperty( 'le' );
 		const hasGt = opts.hasOwnProperty( 'gt' );
@@ -190,24 +231,24 @@ export default class BinMap< K, V > extends Map
 			( gt === BinMap.min || ge === BinMap.min )
 			? ( key: K ) => false
 			: hasGt
-			? ( key: K ) => this._opts.cmp( < K >gt, key ) >= 0
-			: ( key: K ) => this._opts.cmp( < K >ge, key ) > 0;
+			? ( key: K ) => this._comparator.cmp( < K >gt, key ) >= 0
+			: ( key: K ) => this._comparator.cmp( < K >ge, key ) > 0;
 
 		const stopRight =
 			( lt === BinMap.max || le === BinMap.max )
 			? ( key: K ) => false
 			: hasLt
-			? ( key: K ) => this._opts.cmp( key, < K >lt ) >= 0
-			: ( key: K ) => this._opts.cmp( key, < K >le ) > 0;
+			? ( key: K ) => this._comparator.cmp( key, < K >lt ) >= 0
+			: ( key: K ) => this._comparator.cmp( key, < K >le ) > 0;
 
 		const strict =
 			( less: boolean, iter: Iterator< IteratorType< K, V > > ) =>
 		{
 			const data = iter.data( );
 			if ( !data )
-				return iter;
+				return goPrev( iter );
 
-			if ( less || this._opts.cmp( data[ 0 ], < K >le ) !== 0 )
+			if ( less || this._comparator.cmp( data[ 0 ], < K >le ) !== 0 )
 				iter.prev( );
 
 			return iter;
@@ -302,6 +343,9 @@ export default class BinMap< K, V > extends Map
 
 	set( key: K, value: V )
 	{
+		if ( valueOf( key ) == null )
+			throw new Error( "Cannot set null or undefined as key" );
+
 		this.ensureComparator( key );
 
 		// If we have to update, we'll need to delete first (bintrees API)
