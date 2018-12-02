@@ -4,3 +4,4 @@ coverage/
 build/
 node_modules/
 yarn.lock
+dist/
