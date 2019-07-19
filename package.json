@@ -42,7 +42,7 @@
     "@types/sinon": "5.x",
     "chai": "4.x",
     "coveralls": "3.x",
-    "cz-conventional-changelog": "2.x",
+    "cz-conventional-changelog": "^3.0.0",
     "mocha": "5.x",
     "nyc": "13.x",
     "pre-commit": "1.x",
