@@ -47,7 +47,7 @@
     "nyc": "^14.1.1",
     "pre-commit": "1.x",
     "semantic-release": "15.x",
-    "sinon": "7.x",
+    "sinon": "^8.0.0",
     "source-map-support": "0.x",
     "travis-deploy-once": "5.x",
     "typescript": "3.x"
