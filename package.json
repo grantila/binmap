@@ -46,7 +46,7 @@
     "mocha": "^6.2.1",
     "nyc": "^14.1.1",
     "pre-commit": "1.x",
-    "semantic-release": "15.x",
+    "semantic-release": "^16.0.0",
     "sinon": "7.x",
     "source-map-support": "0.x",
     "travis-deploy-once": "5.x",
