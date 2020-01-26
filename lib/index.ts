@@ -289,7 +289,7 @@ export default class BinMap< K, V > extends Map
 				value,
 				done: false
 			};
-		}
+		};
 
 		return makeIterator( next );
 	}
