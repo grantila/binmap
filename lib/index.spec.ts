@@ -1,11 +1,6 @@
 'use strict';
 
-import 'mocha'
-import { expect } from 'chai'
-import * as sinon from 'sinon'
-import 'source-map-support/register'
-
-import BinMap, { BetweenOptions } from '../'
+import BinMap, { BetweenOptions } from './index'
 
 const strings: Array< [ string, string ] > =
 	[ [ 'e', 'f' ], [ 'a', 'b' ], [ 'c', 'd' ] ];
@@ -16,16 +11,16 @@ describe( 'basics', ( ) =>
 {
 	it( 'empty', ( ) =>
 	{
-		const spy = sinon.spy( );
+		const spy = jest.fn( );
 		const bm = new BinMap( );
 
-		expect( bm.size ).to.equal( 0 );
+		expect( bm.size ).toEqual( 0 );
 
 		bm.forEach( spy );
-		expect( spy.callCount ).to.equal( 0 );
+		expect( spy.mock.calls.length ).toEqual( 0 );
 
 		const arr = Array.from( bm );
-		expect( arr.length ).to.equal( 0 );
+		expect( arr.length ).toEqual( 0 );
 
 		// Tests the [Symbol.iterator] on empty sets
 		Array.from( bm.entries( ) );
@@ -33,18 +28,18 @@ describe( 'basics', ( ) =>
 
 	it( 'empty then add', ( ) =>
 	{
-		const spy = sinon.spy( );
+		const spy = jest.fn( );
 		const bm = new BinMap( );
 
 		bm.set( 1, 2 );
 
-		expect( bm.size ).to.equal( 1 );
+		expect( bm.size ).toEqual( 1 );
 
 		bm.forEach( spy );
-		expect( spy.callCount ).to.equal( 1 );
+		expect( spy.mock.calls.length ).toEqual( 1 );
 
 		const arr = Array.from( bm );
-		expect( arr.length ).to.equal( 1 );
+		expect( arr.length ).toEqual( 1 );
 
 		// Tests the [Symbol.iterator] on non-empty sets
 		Array.from( bm.entries( ) );
@@ -52,17 +47,17 @@ describe( 'basics', ( ) =>
 
 	it( 'single element', ( ) =>
 	{
-		const spy = sinon.spy( );
+		const spy = jest.fn( );
 		const bm = new BinMap( [ [ 1, 2 ] ] );
 
-		expect( bm.size ).to.equal( 1 );
+		expect( bm.size ).toEqual( 1 );
 
 		bm.forEach( spy );
-		expect( spy.callCount ).to.equal( 1 );
-		expect( spy.args[ 0 ] ).to.deep.equal( [ 2, 1, bm ] );
+		expect( spy.mock.calls.length ).toEqual( 1 );
+		expect( spy.mock.calls[ 0 ] ).toEqual( [ 2, 1, bm ] );
 
 		const arr = Array.from( bm );
-		expect( arr.length ).to.equal( 1 );
+		expect( arr.length ).toEqual( 1 );
 
 		// Tests the [Symbol.iterator] on non-empty sets
 		Array.from( bm.entries( ) );
@@ -70,33 +65,33 @@ describe( 'basics', ( ) =>
 
 	it( 'numbers', ( ) =>
 	{
-		const spy = sinon.spy( );
+		const spy = jest.fn( );
 		const bm = new BinMap( [ [ 5, 6 ], [ 1, 2 ], [ 3, 4 ] ] );
 
-		expect( bm.size ).to.equal( 3 );
+		expect( bm.size ).toEqual( 3 );
 
 		bm.forEach( spy );
-		expect( spy.callCount ).to.equal( 3 );
-		expect( spy.args ).to.deep.equal( [
+		expect( spy.mock.calls.length ).toEqual( 3 );
+		expect( spy.mock.calls ).toEqual( [
 			[ 2, 1, bm ],
 			[ 4, 3, bm ],
 			[ 6, 5, bm ],
 		] );
 
 		const arr = Array.from( bm );
-		expect( arr.length ).to.equal( 3 );
+		expect( arr.length ).toEqual( 3 );
 	} );
 
 	it( 'string', ( ) =>
 	{
-		const spy = sinon.spy( );
+		const spy = jest.fn( );
 		const bm = new BinMap( strings );
 
-		expect( bm.size ).to.equal( 3 );
+		expect( bm.size ).toEqual( 3 );
 
 		bm.forEach( spy );
-		expect( spy.callCount ).to.equal( 3 );
-		expect( spy.args ).to.deep.equal( [
+		expect( spy.mock.calls.length ).toEqual( 3 );
+		expect( spy.mock.calls ).toEqual( [
 			[ "b", "a", bm ],
 			[ "d", "c", bm ],
 			[ "f", "e", bm ],
@@ -105,14 +100,14 @@ describe( 'basics', ( ) =>
 
 	it( 'convert from Map', ( ) =>
 	{
-		const spy = sinon.spy( );
+		const spy = jest.fn( );
 		const bm = new BinMap( new Map< string, string >( strings ) );
 
-		expect( bm.size ).to.equal( 3 );
+		expect( bm.size ).toEqual( 3 );
 
 		bm.forEach( spy );
-		expect( spy.callCount ).to.equal( 3 );
-		expect( spy.args ).to.deep.equal( [
+		expect( spy.mock.calls.length ).toEqual( 3 );
+		expect( spy.mock.calls ).toEqual( [
 			[ "b", "a", bm ],
 			[ "d", "c", bm ],
 			[ "f", "e", bm ],
@@ -121,16 +116,16 @@ describe( 'basics', ( ) =>
 
 	it( 'convert to Map', ( ) =>
 	{
-		const spy = sinon.spy( );
+		const spy = jest.fn( );
 		const bm = new BinMap( strings );
 
 		const map = new Map( bm );
 
-		expect( map.size ).to.equal( 3 );
+		expect( map.size ).toEqual( 3 );
 
 		map.forEach( spy );
-		expect( spy.callCount ).to.equal( 3 );
-		expect( spy.args ).to.deep.equal( [
+		expect( spy.mock.calls.length ).toEqual( 3 );
+		expect( spy.mock.calls ).toEqual( [
 			[ "b", "a", map ],
 			[ "d", "c", map ],
 			[ "f", "e", map ],
@@ -139,16 +134,16 @@ describe( 'basics', ( ) =>
 
 	it( 'insert before all', ( ) =>
 	{
-		const spy = sinon.spy( );
+		const spy = jest.fn( );
 		const bm = new BinMap( strings );
 
 		bm.set( "@", "g" );
 
-		expect( bm.size ).to.equal( 4 );
+		expect( bm.size ).toEqual( 4 );
 
 		bm.forEach( spy );
-		expect( spy.callCount ).to.equal( 4 );
-		expect( spy.args ).to.deep.equal( [
+		expect( spy.mock.calls.length ).toEqual( 4 );
+		expect( spy.mock.calls ).toEqual( [
 			[ "g", "@", bm ],
 			[ "b", "a", bm ],
 			[ "d", "c", bm ],
@@ -158,16 +153,16 @@ describe( 'basics', ( ) =>
 
 	it( 'insert after all', ( ) =>
 	{
-		const spy = sinon.spy( );
+		const spy = jest.fn( );
 		const bm = new BinMap( strings );
 
 		bm.set( "g", "h" );
 
-		expect( bm.size ).to.equal( 4 );
+		expect( bm.size ).toEqual( 4 );
 
 		bm.forEach( spy );
-		expect( spy.callCount ).to.equal( 4 );
-		expect( spy.args ).to.deep.equal( [
+		expect( spy.mock.calls.length ).toEqual( 4 );
+		expect( spy.mock.calls ).toEqual( [
 			[ "b", "a", bm ],
 			[ "d", "c", bm ],
 			[ "f", "e", bm ],
@@ -177,16 +172,16 @@ describe( 'basics', ( ) =>
 
 	it( 'insert in the middle', ( ) =>
 	{
-		const spy = sinon.spy( );
+		const spy = jest.fn( );
 		const bm = new BinMap( strings );
 
 		bm.set( "cc", "dd" );
 
-		expect( bm.size ).to.equal( 4 );
+		expect( bm.size ).toEqual( 4 );
 
 		bm.forEach( spy );
-		expect( spy.callCount ).to.equal( 4 );
-		expect( spy.args ).to.deep.equal( [
+		expect( spy.mock.calls.length ).toEqual( 4 );
+		expect( spy.mock.calls ).toEqual( [
 			[ "b", "a", bm ],
 			[ "d", "c", bm ],
 			[ "dd", "cc", bm ],
@@ -196,17 +191,17 @@ describe( 'basics', ( ) =>
 
 	it( 'create empty with custom comparator', ( ) =>
 	{
-		const spy = sinon.spy( );
+		const spy = jest.fn( );
 		const bm = new BinMap( { cmp: invertedCmp } );
 
 		bm.set( "a", "b" );
 		bm.set( "c", "d" );
 
-		expect( bm.size ).to.equal( 2 );
+		expect( bm.size ).toEqual( 2 );
 
 		bm.forEach( spy );
-		expect( spy.callCount ).to.equal( 2 );
-		expect( spy.args ).to.deep.equal( [
+		expect( spy.mock.calls.length ).toEqual( 2 );
+		expect( spy.mock.calls ).toEqual( [
 			[ "d", "c", bm ],
 			[ "b", "a", bm ],
 		] );
@@ -214,17 +209,17 @@ describe( 'basics', ( ) =>
 
 	it( 'create non-empty with custom comparator', ( ) =>
 	{
-		const spy = sinon.spy( );
+		const spy = jest.fn( );
 		const bm = new BinMap(
 			[ [ "a", "b" ], [ "c", "d" ] ],
 			{ cmp: invertedCmp }
 		);
 
-		expect( bm.size ).to.equal( 2 );
+		expect( bm.size ).toEqual( 2 );
 
 		bm.forEach( spy );
-		expect( spy.callCount ).to.equal( 2 );
-		expect( spy.args ).to.deep.equal( [
+		expect( spy.mock.calls.length ).toEqual( 2 );
+		expect( spy.mock.calls ).toEqual( [
 			[ "d", "c", bm ],
 			[ "b", "a", bm ],
 		] );
@@ -232,16 +227,16 @@ describe( 'basics', ( ) =>
 
 	it( 'delete non-existing element', ( ) =>
 	{
-		const spy = sinon.spy( );
+		const spy = jest.fn( );
 		const bm = new BinMap( [ [ "a", "b" ], [ "c", "d" ] ] );
 
-		expect( bm.delete( "x" ) ).to.be.false;
+		expect( bm.delete( "x" ) ).toEqual( false );
 
-		expect( bm.size ).to.equal( 2 );
+		expect( bm.size ).toEqual( 2 );
 
 		bm.forEach( spy );
-		expect( spy.callCount ).to.equal( 2 );
-		expect( spy.args ).to.deep.equal( [
+		expect( spy.mock.calls.length ).toEqual( 2 );
+		expect( spy.mock.calls ).toEqual( [
 			[ "b", "a", bm ],
 			[ "d", "c", bm ],
 		] );
@@ -249,312 +244,312 @@ describe( 'basics', ( ) =>
 
 	it( 'delete only element', ( ) =>
 	{
-		const spy = sinon.spy( );
+		const spy = jest.fn( );
 		const bm = new BinMap( [ [ "a", "b" ] ] );
 
-		expect( bm.delete( "a" ) ).to.be.true;
+		expect( bm.delete( "a" ) ).toEqual( true );
 
-		expect( bm.size ).to.equal( 0 );
+		expect( bm.size ).toEqual( 0 );
 
 		bm.forEach( spy );
-		expect( spy.callCount ).to.equal( 0 );
-		expect( spy.args ).to.deep.equal( [ ] );
+		expect( spy.mock.calls.length ).toEqual( 0 );
+		expect( spy.mock.calls ).toEqual( [ ] );
 	} );
 
 	it( 'delete an element', ( ) =>
 	{
-		const spy = sinon.spy( );
+		const spy = jest.fn( );
 		const bm = new BinMap( [ [ "a", "b" ], [ "c", "d" ] ] );
 
-		expect( bm.delete( "a" ) ).to.be.true;
+		expect( bm.delete( "a" ) ).toEqual( true );
 
-		expect( bm.size ).to.equal( 1 );
+		expect( bm.size ).toEqual( 1 );
 
 		bm.forEach( spy );
-		expect( spy.callCount ).to.equal( 1 );
-		expect( spy.args ).to.deep.equal( [
+		expect( spy.mock.calls.length ).toEqual( 1 );
+		expect( spy.mock.calls ).toEqual( [
 			[ "d", "c", bm ],
 		] );
 	} );
 
 	it( 'delete uninitialized', ( ) =>
 	{
-		const spy = sinon.spy( );
+		const spy = jest.fn( );
 		const bm = new BinMap( );
 
-		expect( bm.delete( "a" ) ).to.be.false;
+		expect( bm.delete( "a" ) ).toEqual( false );
 
-		expect( bm.size ).to.equal( 0 );
+		expect( bm.size ).toEqual( 0 );
 
 		bm.forEach( spy );
-		expect( spy.callCount ).to.equal( 0 );
-		expect( spy.args ).to.deep.equal( [ ] );
+		expect( spy.mock.calls.length ).toEqual( 0 );
+		expect( spy.mock.calls ).toEqual( [ ] );
 	} );
 
 	it( 'clear', ( ) =>
 	{
-		const spy = sinon.spy( );
+		const spy = jest.fn( );
 		const bm = new BinMap( [ [ "a", "b" ], [ "c", "d" ] ] );
 
 		bm.clear( );
 
-		expect( bm.size ).to.equal( 0 );
+		expect( bm.size ).toEqual( 0 );
 
 		bm.forEach( spy );
-		expect( spy.callCount ).to.equal( 0 );
-		expect( spy.args ).to.deep.equal( [ ] );
+		expect( spy.mock.calls.length ).toEqual( 0 );
+		expect( spy.mock.calls ).toEqual( [ ] );
 	} );
 
 	it( 'double clear', ( ) =>
 	{
-		const spy = sinon.spy( );
+		const spy = jest.fn( );
 		const bm = new BinMap( [ [ "a", "b" ], [ "c", "d" ] ] );
 
 		bm.clear( );
 		bm.clear( );
 
-		expect( bm.size ).to.equal( 0 );
+		expect( bm.size ).toEqual( 0 );
 
 		bm.forEach( spy );
-		expect( spy.callCount ).to.equal( 0 );
-		expect( spy.args ).to.deep.equal( [ ] );
+		expect( spy.mock.calls.length ).toEqual( 0 );
+		expect( spy.mock.calls ).toEqual( [ ] );
 	} );
 
 	it( 'clear uninitialized', ( ) =>
 	{
-		const spy = sinon.spy( );
+		const spy = jest.fn( );
 		const bm = new BinMap( );
 
 		bm.clear( );
 
-		expect( bm.size ).to.equal( 0 );
+		expect( bm.size ).toEqual( 0 );
 
 		bm.forEach( spy );
-		expect( spy.callCount ).to.equal( 0 );
-		expect( spy.args ).to.deep.equal( [ ] );
+		expect( spy.mock.calls.length ).toEqual( 0 );
+		expect( spy.mock.calls ).toEqual( [ ] );
 	} );
 
 	it( 'clear empty', ( ) =>
 	{
-		const spy = sinon.spy( );
+		const spy = jest.fn( );
 		const bm = new BinMap( [ [ "a", "b" ] ] );
 
-		expect( bm.delete( "a" ) ).to.be.true;
+		expect( bm.delete( "a" ) ).toEqual( true );
 
 		bm.clear( );
 
-		expect( bm.size ).to.equal( 0 );
+		expect( bm.size ).toEqual( 0 );
 
 		bm.forEach( spy );
-		expect( spy.callCount ).to.equal( 0 );
-		expect( spy.args ).to.deep.equal( [ ] );
+		expect( spy.mock.calls.length ).toEqual( 0 );
+		expect( spy.mock.calls ).toEqual( [ ] );
 	} );
 
 	it( 'get uninitialized', ( ) =>
 	{
-		const spy = sinon.spy( );
+		const spy = jest.fn( );
 		const bm = new BinMap( );
 
-		expect( bm.get( "a" ) ).to.be.undefined;
+		expect( bm.get( "a" ) ).toBeUndefined( );
 	} );
 
 	it( 'get deleted', ( ) =>
 	{
-		const spy = sinon.spy( );
+		const spy = jest.fn( );
 		const bm = new BinMap( [ [ "a", "b" ] ] );
 
-		expect( bm.delete( "a" ) ).to.be.true;
+		expect( bm.delete( "a" ) ).toEqual( true );
 
-		expect( bm.get( "a" ) ).to.be.undefined;
+		expect( bm.get( "a" ) ).toBeUndefined( );
 	} );
 
 	it( 'get never inserted', ( ) =>
 	{
-		const spy = sinon.spy( );
+		const spy = jest.fn( );
 		const bm = new BinMap( [ [ "a", "b" ] ] );
 
-		expect( bm.get( "x" ) ).to.be.undefined;
+		expect( bm.get( "x" ) ).toBeUndefined( );
 	} );
 
 	it( 'get existing', ( ) =>
 	{
-		const spy = sinon.spy( );
+		const spy = jest.fn( );
 		const bm = new BinMap( [ [ "a", "b" ] ] );
 
-		expect( bm.get( "a" ) ).to.equal( "b" );
+		expect( bm.get( "a" ) ).toEqual( "b" );
 	} );
 
 	it( 'has uninitialized', ( ) =>
 	{
-		const spy = sinon.spy( );
+		const spy = jest.fn( );
 		const bm = new BinMap( );
 
-		expect( bm.has( "a" ) ).to.be.false;
+		expect( bm.has( "a" ) ).toEqual( false );
 	} );
 
 	it( 'has deleted', ( ) =>
 	{
-		const spy = sinon.spy( );
+		const spy = jest.fn( );
 		const bm = new BinMap( [ [ "a", "b" ] ] );
 
-		expect( bm.delete( "a" ) ).to.be.true;
+		expect( bm.delete( "a" ) ).toEqual( true );
 
-		expect( bm.has( "a" ) ).to.be.false;
+		expect( bm.has( "a" ) ).toEqual( false );
 	} );
 
 	it( 'has never inserted', ( ) =>
 	{
-		const spy = sinon.spy( );
+		const spy = jest.fn( );
 		const bm = new BinMap( [ [ "a", "b" ] ] );
 
-		expect( bm.has( "x" ) ).to.be.false;
+		expect( bm.has( "x" ) ).toEqual( false );
 	} );
 
 	it( 'has existing', ( ) =>
 	{
-		const spy = sinon.spy( );
+		const spy = jest.fn( );
 		const bm = new BinMap( [ [ "a", "b" ] ] );
 
-		expect( bm.has( "a" ) ).to.be.true;
+		expect( bm.has( "a" ) ).toEqual( true );
 	} );
 
 	it( 'keys uninitialized', ( ) =>
 	{
-		const spy = sinon.spy( );
+		const spy = jest.fn( );
 		const bm = new BinMap( );
 
-		expect( Array.from( bm.keys( ) ) ).to.be.empty;
+		expect( Array.from( bm.keys( ) ) ).toHaveLength( 0 );
 	} );
 
 	it( 'keys empty', ( ) =>
 	{
-		const spy = sinon.spy( );
+		const spy = jest.fn( );
 		const bm = new BinMap( [ [ "a", "b" ] ] );
 
-		expect( bm.delete( "a" ) ).to.be.true;
+		expect( bm.delete( "a" ) ).toEqual( true );
 
-		expect( Array.from( bm.keys( ) ) ).to.be.empty;
+		expect( Array.from( bm.keys( ) ) ).toHaveLength( 0 );
 	} );
 
 	it( 'keys one', ( ) =>
 	{
-		const spy = sinon.spy( );
+		const spy = jest.fn( );
 		const bm = new BinMap( [ [ "a", "b" ] ] );
 
-		expect( Array.from( bm.keys( ) ) ).to.deep.equal( [ "a" ] );
+		expect( Array.from( bm.keys( ) ) ).toEqual( [ "a" ] );
 	} );
 
 	it( 'keys multiple', ( ) =>
 	{
-		const spy = sinon.spy( );
+		const spy = jest.fn( );
 		const bm = new BinMap( strings );
 
-		expect( Array.from( bm.keys( ) ) ).to.deep.equal( [ "a", "c", "e" ] );
+		expect( Array.from( bm.keys( ) ) ).toEqual( [ "a", "c", "e" ] );
 	} );
 
 	it( 'values uninitialized', ( ) =>
 	{
-		const spy = sinon.spy( );
+		const spy = jest.fn( );
 		const bm = new BinMap( );
 
-		expect( Array.from( bm.values( ) ) ).to.be.empty;
+		expect( Array.from( bm.values( ) ) ).toHaveLength( 0 );
 	} );
 
 	it( 'values empty', ( ) =>
 	{
-		const spy = sinon.spy( );
+		const spy = jest.fn( );
 		const bm = new BinMap( [ [ "a", "b" ] ] );
 
-		expect( bm.delete( "a" ) ).to.be.true;
+		expect( bm.delete( "a" ) ).toEqual( true );
 
-		expect( Array.from( bm.values( ) ) ).to.be.empty;
+		expect( Array.from( bm.values( ) ) ).toHaveLength( 0 );
 	} );
 
 	it( 'values one', ( ) =>
 	{
-		const spy = sinon.spy( );
+		const spy = jest.fn( );
 		const bm = new BinMap( [ [ "a", "b" ] ] );
 
-		expect( Array.from( bm.values( ) ) ).to.deep.equal( [ "b" ] );
+		expect( Array.from( bm.values( ) ) ).toEqual( [ "b" ] );
 	} );
 
 	it( 'values multiple', ( ) =>
 	{
-		const spy = sinon.spy( );
+		const spy = jest.fn( );
 		const bm = new BinMap( strings );
 
-		expect( Array.from( bm.values( ) ) ).to.deep.equal( [ "b", "d", "f" ] );
+		expect( Array.from( bm.values( ) ) ).toEqual( [ "b", "d", "f" ] );
 	} );
 
 	it( 'entries uninitialized', ( ) =>
 	{
-		const spy = sinon.spy( );
+		const spy = jest.fn( );
 		const bm = new BinMap( );
 
-		expect( Array.from( bm.entries( ) ) ).to.be.empty;
+		expect( Array.from( bm.entries( ) ) ).toHaveLength( 0 );
 	} );
 
 	it( 'entries empty', ( ) =>
 	{
-		const spy = sinon.spy( );
+		const spy = jest.fn( );
 		const bm = new BinMap( [ [ "a", "b" ] ] );
 
-		expect( bm.delete( "a" ) ).to.be.true;
+		expect( bm.delete( "a" ) ).toEqual( true );
 
-		expect( Array.from( bm.entries( ) ) ).to.be.empty;
+		expect( Array.from( bm.entries( ) ) ).toHaveLength( 0 );
 	} );
 
 	it( 'entries one', ( ) =>
 	{
-		const spy = sinon.spy( );
+		const spy = jest.fn( );
 		const bm = new BinMap( [ [ "a", "b" ] ] );
 
-		expect( Array.from( bm.entries( ) ) ).to.deep.equal( [ [ "a", "b" ] ] );
+		expect( Array.from( bm.entries( ) ) ).toEqual( [ [ "a", "b" ] ] );
 	} );
 
 	it( 'entries multiple', ( ) =>
 	{
-		const spy = sinon.spy( );
+		const spy = jest.fn( );
 		const bm = new BinMap( strings );
 
-		expect( Array.from( bm.entries( ) ) ).to.deep
-			.equal( [ [ "a", "b" ], [ "c", "d" ], [ "e", "f" ] ] );
+		expect( Array.from( bm.entries( ) ) )
+			.toEqual( [ [ "a", "b" ], [ "c", "d" ], [ "e", "f" ] ] );
 	} );
 
 	it( 'between uninitialized', ( ) =>
 	{
-		const spy = sinon.spy( );
+		const spy = jest.fn( );
 		const bm = new BinMap( );
 
-		expect( Array.from( bm.between( ) ) ).to.deep.equal( [ ] );
+		expect( Array.from( bm.between( ) ) ).toEqual( [ ] );
 	} );
 
 	it( 'between empty', ( ) =>
 	{
-		const spy = sinon.spy( );
+		const spy = jest.fn( );
 		const bm = new BinMap( strings );
 
 		bm.clear( );
 
-		expect( Array.from( bm.between( ) ) ).to.deep.equal( [ ] );
+		expect( Array.from( bm.between( ) ) ).toEqual( [ ] );
 	} );
 
 	it( 'between single all', ( ) =>
 	{
-		const spy = sinon.spy( );
+		const spy = jest.fn( );
 		const bm = new BinMap( [ [ "a", "b" ] ] );
 
-		expect( Array.from( bm.between( ) ) ).to.deep
-			.equal( [ [ "a", "b" ] ] );
+		expect( Array.from( bm.between( ) ) )
+			.toEqual( [ [ "a", "b" ] ] );
 	} );
 
 	it( 'between single all reverse', ( ) =>
 	{
-		const spy = sinon.spy( );
+		const spy = jest.fn( );
 		const bm = new BinMap( [ [ "a", "b" ] ] );
 
-		expect( Array.from( bm.between( { reverse: true } ) ) ).to.deep
-			.equal( [ [ "a", "b" ] ] );
+		expect( Array.from( bm.between( { reverse: true } ) ) )
+			.toEqual( [ [ "a", "b" ] ] );
 	} );
 
 	function betweens(
@@ -614,144 +609,144 @@ describe( 'basics', ( ) =>
 
 		it( 'between ge-exact le-exact', ( ) =>
 		{
-			const spy = sinon.spy( );
+			const spy = jest.fn( );
 			const bm = new BinMap( strings, { cmp } );
 
 			expect( Array.from( bm.between(
 				applyOpts( { ge: "a", le: "e" } )
-			) ) ).to.deep.equal(
+			) ) ).toEqual(
 				maybeReverse( [ [ "a", "b" ], [ "c", "d" ], [ "e", "f" ] ] )
 			);
 		} );
 
 		it( 'between {min} le-exact', ( ) =>
 		{
-			const spy = sinon.spy( );
+			const spy = jest.fn( );
 			const bm = new BinMap( strings, { cmp } );
 
 			expect( Array.from( bm.between(
 				applyOpts( { ge: BinMap.min, le: "e" } )
-			) ) ).to.deep.equal(
+			) ) ).toEqual(
 				maybeReverse( [ [ "a", "b" ], [ "c", "d" ], [ "e", "f" ] ] )
 			);
 		} );
 
 		it( 'between ge-exact {max}', ( ) =>
 		{
-			const spy = sinon.spy( );
+			const spy = jest.fn( );
 			const bm = new BinMap( strings, { cmp } );
 
 			expect( Array.from( bm.between(
 				applyOpts( { ge: "a", le: BinMap.max } )
-			) ) ).to.deep.equal(
+			) ) ).toEqual(
 				maybeReverse( [ [ "a", "b" ], [ "c", "d" ], [ "e", "f" ] ] )
 			);
 		} );
 
 		it( 'between ge le-exact', ( ) =>
 		{
-			const spy = sinon.spy( );
+			const spy = jest.fn( );
 			const bm = new BinMap( strings, { cmp } );
 
 			expect( Array.from( bm.between(
 				applyOpts( { ge: "b", le: "e" } )
-			) ) ).to.deep.equal(
+			) ) ).toEqual(
 				maybeReverse( [ [ "c", "d" ], [ "e", "f" ] ] )
 			);
 		} );
 
 		it( 'between ge-exact le', ( ) =>
 		{
-			const spy = sinon.spy( );
+			const spy = jest.fn( );
 			const bm = new BinMap( strings, { cmp } );
 
 			expect( Array.from( bm.between(
 				applyOpts( { ge: "a", le: "d" } )
-			) ) ).to.deep.equal(
+			) ) ).toEqual(
 				maybeReverse( [ [ "a", "b" ], [ "c", "d" ] ] )
 			);
 		} );
 
 		it( 'between ge le', ( ) =>
 		{
-			const spy = sinon.spy( );
+			const spy = jest.fn( );
 			const bm = new BinMap( strings, { cmp } );
 
 			expect( Array.from( bm.between(
 				applyOpts( { ge: "b", le: "d" } )
-			) ) ).to.deep.equal(
+			) ) ).toEqual(
 				maybeReverse( [ [ "c", "d" ] ] )
 			);
 		} );
 
 		it( 'between gt-exact le-exact', ( ) =>
 		{
-			const spy = sinon.spy( );
+			const spy = jest.fn( );
 			const bm = new BinMap( strings, { cmp } );
 
 			expect( Array.from( bm.between(
 				applyOpts( { gt: "a", le: "e" } )
-			) ) ).to.deep.equal(
+			) ) ).toEqual(
 				maybeReverse( [ [ "c", "d" ], [ "e", "f" ] ] )
 			);
 		} );
 
 		it( 'between ge-exact lt-exact', ( ) =>
 		{
-			const spy = sinon.spy( );
+			const spy = jest.fn( );
 			const bm = new BinMap( strings, { cmp } );
 
 			expect( Array.from( bm.between(
 				applyOpts( { ge: "a", lt: "e" } )
-			) ) ).to.deep.equal(
+			) ) ).toEqual(
 				maybeReverse( [ [ "a", "b" ], [ "c", "d" ] ] )
 			);
 		} );
 
 		it( 'between gt-exact lt-exact', ( ) =>
 		{
-			const spy = sinon.spy( );
+			const spy = jest.fn( );
 			const bm = new BinMap( strings, { cmp } );
 
 			expect( Array.from( bm.between(
 				applyOpts( { gt: "a", lt: "e" } )
-			) ) ).to.deep.equal(
+			) ) ).toEqual(
 				maybeReverse( [ [ "c", "d" ] ] )
 			);
 		} );
 
 		it( 'between gt lt', ( ) =>
 		{
-			const spy = sinon.spy( );
+			const spy = jest.fn( );
 			const bm = new BinMap( strings, { cmp } );
 
 			expect( Array.from( bm.between(
 				applyOpts( { gt: "b", lt: "d" } )
-			) ) ).to.deep.equal(
+			) ) ).toEqual(
 				maybeReverse( [ [ "c", "d" ] ] )
 			);
 		} );
 
 		it( 'between lt too low', ( ) =>
 		{
-			const spy = sinon.spy( );
+			const spy = jest.fn( );
 			const bm = new BinMap( strings, { cmp } );
 
 			expect( Array.from( bm.between(
 				applyOpts( { gt: "!", lt: "@" } )
-			) ) ).to.deep.equal(
+			) ) ).toEqual(
 				maybeReverse( [ ] )
 			);
 		} );
 
 		it( 'between lt too low', ( ) =>
 		{
-			const spy = sinon.spy( );
+			const spy = jest.fn( );
 			const bm = new BinMap( strings, { cmp } );
 
 			expect( Array.from( bm.between(
 				applyOpts( { gt: "x", lt: "y" } )
-			) ) ).to.deep.equal(
+			) ) ).toEqual(
 				maybeReverse( [ ] )
 			);
 		} );
@@ -766,24 +761,24 @@ describe( 'basics', ( ) =>
 
 	it( 'between le and lt', ( ) =>
 	{
-		const spy = sinon.spy( );
+		const spy = jest.fn( );
 		const bm = new BinMap( strings );
 
 		const thrower = ( ) =>
 			bm.between( < any >{ le: "x", lt: "y" } );
 
-		expect( thrower ).to.throw( "both" );
+		expect( thrower ).toThrow( "both" );
 	} );
 
 	it( 'between ge and gt', ( ) =>
 	{
-		const spy = sinon.spy( );
+		const spy = jest.fn( );
 		const bm = new BinMap( strings );
 
 		const thrower = ( ) =>
 			bm.between( < any >{ ge: "x", gt: "y" } );
 
-		expect( thrower ).to.throw( "both" );
+		expect( thrower ).toThrow( "both" );
 	} );
 } );
 
@@ -791,7 +786,7 @@ describe( 'types', ( ) =>
 {
 	it( 'date', ( ) =>
 	{
-		const spy = sinon.spy( );
+		const spy = jest.fn( );
 		const bm = new BinMap< Date, number >( );
 
 		const dates: Array< [ number, Date ] > = [
@@ -807,11 +802,11 @@ describe( 'types', ( ) =>
 		bm.set( dates[ 0 ][ 1 ], dates[ 0 ][ 0 ] );
 		bm.set( dates[ 3 ][ 1 ], dates[ 3 ][ 0 ] );
 
-		expect( bm.size ).to.equal( 4 );
+		expect( bm.size ).toEqual( 4 );
 
 		bm.forEach( spy );
-		expect( spy.callCount ).to.equal( 4 );
-		expect( spy.args ).to.deep.equal( [
+		expect( spy.mock.calls.length ).toEqual( 4 );
+		expect( spy.mock.calls ).toEqual( [
 			[ ...dates[ 0 ], bm ],
 			[ ...dates[ 1 ], bm ],
 			[ ...dates[ 2 ], bm ],
@@ -820,20 +815,20 @@ describe( 'types', ( ) =>
 
 		const future = new Date( );
 		expect( Array.from( bm.between( { le: future } ) ) )
-			.to.deep.equal( datesKeyVal );
+			.toEqual( datesKeyVal );
 		expect( Array.from( bm.between( { le: future, reverse: true } ) ) )
-			.to.deep.equal( [ ...datesKeyVal ].reverse( ) );
+			.toEqual( [ ...datesKeyVal ].reverse( ) );
 
 		const past = new Date( "2017-10-01T00:01:00Z" );
 		expect( Array.from( bm.between( { ge: past } ) ) )
-			.to.deep.equal( datesKeyVal );
+			.toEqual( datesKeyVal );
 		expect( Array.from( bm.between( { ge: past, reverse: true } ) ) )
-			.to.deep.equal( [ ...datesKeyVal ].reverse( ) );
+			.toEqual( [ ...datesKeyVal ].reverse( ) );
 	} );
 
 	it( 'undefined', ( ) =>
 	{
-		const spy = sinon.spy( );
+		const spy = jest.fn( );
 		const bm = new BinMap< Date, number >( );
 
 		bm.set( new Date( "2018-01-01T00:01:00Z" ), 0 );
@@ -844,13 +839,13 @@ describe( 'types', ( ) =>
 		const throwerNull = ( ) =>
 			bm.set( null, 2 );
 
-		expect( throwerUndefined ).to.throw( /Cannot set.*as key/ );
-		expect( throwerNull ).to.throw( /Cannot set.*as key/ );
+		expect( throwerUndefined ).toThrow( /Cannot set.*as key/ );
+		expect( throwerNull ).toThrow( /Cannot set.*as key/ );
 	} );
 
 	it( 'multi types', ( ) =>
 	{
-		const spy = sinon.spy( );
+		const spy = jest.fn( );
 		const bm = new BinMap< Date, number >( );
 
 		bm.set( new Date( "2018-01-01T00:01:00Z" ), 0 );
@@ -859,25 +854,25 @@ describe( 'types', ( ) =>
 		const thrower = ( ) =>
 			bm.set( < any >"foo", 1 );
 
-		expect( thrower ).to.throw( "mis-matching" );
+		expect( thrower ).toThrow( "mis-matching" );
 	} );
 
 	it( 'invalid type', ( ) =>
 	{
-		const spy = sinon.spy( );
+		const spy = jest.fn( );
 		const bm = new BinMap< { foo: number; }, number >( );
 
 		// Invalid type
 		const thrower = ( ) =>
 			bm.set( { foo: 0 }, 0 );
 
-		expect( thrower ).to.throw( "Cannot set key of type object" );
+		expect( thrower ).toThrow( "Cannot set key of type object" );
 	} );
 
 	it( 'custom type', ( ) =>
 	{
 		type Foo = { foo: number; };
-		const spy = sinon.spy( );
+		const spy = jest.fn( );
 		const cmp = ( a: Foo, b: Foo ) => a.foo - b.foo;
 		const bm = new BinMap< Foo, number >( { cmp } );
 
@@ -886,14 +881,14 @@ describe( 'types', ( ) =>
 		bm.set( { foo: 1 }, 1 );
 
 		expect( Array.from( bm.between( ) ) )
-		.to.deep.equal( [
+		.toEqual( [
 			[ { foo: 0 }, 0 ],
 			[ { foo: 1 }, 1 ],
 			[ { foo: 2 }, 2 ],
 		] );
 
 		expect( Array.from( bm.between( { reverse: true } ) ) )
-		.to.deep.equal( [
+		.toEqual( [
 			[ { foo: 2 }, 2 ],
 			[ { foo: 1 }, 1 ],
 			[ { foo: 0 }, 0 ],

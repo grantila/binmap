@@ -5,9 +5,7 @@
 		"target": "es6",
 		"module": "CommonJS",
 		"moduleResolution": "node",
-		"outDir": "dist",
 		"pretty": true,
-		"sourceMap": true,
 		"allowSyntheticDefaultImports": true
 	},
 	"include": [

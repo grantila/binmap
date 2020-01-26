@@ -14,13 +14,9 @@
   "types": "./dist/index.d.ts",
   "main": "./dist/index.js",
   "scripts": {
-    "build": "scripts/build.sh",
-    "mocha": "node_modules/.bin/mocha --bail --check-leaks build-test",
-    "test": "node_modules/.bin/nyc npm run mocha",
+    "build": "./node_modules/.bin/rimraf dist && ./node_modules/.bin/tsc -p tsconfig.prod.json",
+    "test": "./node_modules/.bin/jest",
     "buildtest": "npm run build && npm run test",
-    "coverage": "node_modules/.bin/nyc report --reporter=html",
-    "travis-deploy-once": "travis-deploy-once",
-    "semantic-release": "semantic-release",
     "cz": "git-cz"
   },
   "pre-commit": [
@@ -37,20 +33,14 @@
   ],
   "devDependencies": {
     "@types/bintrees": "1.x",
-    "@types/chai": "4.x",
-    "@types/mocha": "5.x",
-    "@types/sinon": "^7.0.13",
-    "chai": "4.x",
-    "coveralls": "3.x",
+    "@types/jest": "^24.9.1",
     "cz-conventional-changelog": "^3.0.2",
-    "mocha": "^6.2.1",
-    "nyc": "^14.1.1",
+    "jest": "^25.1.0",
     "pre-commit": "1.x",
-    "semantic-release": "15.x",
-    "sinon": "7.x",
-    "source-map-support": "0.x",
-    "travis-deploy-once": "5.x",
-    "typescript": "3.x"
+    "rimraf": "^3.0.0",
+    "semantic-release": "^16.0.3",
+    "ts-jest": "^25.0.0",
+    "typescript": "^3.7.5"
   },
   "dependencies": {
     "bintrees": "1.x"

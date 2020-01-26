@@ -42,8 +42,8 @@ export type ConstructorValues< K, V > =
 	Array< IteratorType< K, V > > |
 	Iterable< IteratorType< K, V > >;
 
-export type Iterator< ValueType > =
-	{ next( ): { done: boolean; value?: ValueType; } };
+// export type Iterator< ValueType > =
+// 	{ next( ): { done: boolean; value?: ValueType; } };
 
 export type IteratorEnd =
 	{ done: true; value: any };
@@ -66,7 +66,7 @@ const iteratorEnd: Readonly< IteratorEnd > =
 	Object.freeze( { done: true, value: void 0 } ) as IteratorEnd;
 const emptyIterator: IterableIterator< any > =
 	makeIterator( ( ) => iteratorEnd );
-	
+
 export type LE< K > = { le: K | typeof BinMap.min; lt?: never; };
 export type LT< K > = { lt: K | typeof BinMap.min; le?: never; };
 export type GE< K > = { ge: K | typeof BinMap.max; gt?: never; };
