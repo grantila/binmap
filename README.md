@@ -2,6 +2,8 @@
 [![build status][travis-image]][travis-url]
 [![coverage status][coverage-image]][coverage-url]
 [![greenkeeper badge][greenkeeper-image]][greenkeeper-url]
+[![Language grade: JavaScript][lgtm-image]][lgtm-url]
+
 
 # binmap
 
@@ -69,3 +71,5 @@ Array.from( bm.between( { gt: 'b', reverse: true } ) )
 [coverage-url]: https://coveralls.io/github/grantila/binmap?branch=master
 [greenkeeper-image]: https://badges.greenkeeper.io/grantila/binmap.svg
 [greenkeeper-url]: https://greenkeeper.io/
+[lgtm-image]: https://img.shields.io/lgtm/grade/javascript/g/grantila/binmap.svg?logo=lgtm&logoWidth=18
+[lgtm-url]: https://lgtm.com/projects/g/grantila/binmap/context:javascript
